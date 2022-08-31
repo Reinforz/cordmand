@@ -1,0 +1,22 @@
+
+# src files
+node_modules/
+src/
+package-lock.json
+
+# testing files
+coverage/
+tests/
+test.js
+sandbox.js
+experiment
+
+# config files
+.gitignore
+.npmignore
+tsconfig.json
+.prettierrc.js
+jest.config.js
+.github/
+.vscode/
+.env
