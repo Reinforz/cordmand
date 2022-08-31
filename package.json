@@ -20,7 +20,7 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xImouto/commandcord.git"
+    "url": "git+https://github.com/xImouto/cordcommand.git"
   },
   "keywords": [
     "discord.js",
@@ -30,7 +30,7 @@
   "license": "MIT",
   "types": "./dist/index.d.ts",
   "bugs": {
-    "url": "https://github.com/xImouto/commandcord/issues"
+    "url": "https://github.com/xImouto/cordcommand/issues"
   },
-  "homepage": "https://github.com/xImouto/commandcord#readme"
+  "homepage": "https://github.com/xImouto/cordcordcommand#readme"
 }
