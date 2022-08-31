@@ -1,0 +1,36 @@
+{
+  "scripts": {
+    "start:watch": "nodemon experiment/index.ts",
+    "build": "tsc --sourceMap false"
+  },
+  "dependencies": {
+    "discord.js": "^14.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14",
+    "concurrently": "^7.3.0",
+    "dotenv": "^16.0.2",
+    "nodemon": "^2.0.19",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.2"
+  },
+  "name": "commandcord",
+  "version": "0.0.0",
+  "description": "A utility package for making discord-bot commands much easier to write",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xImouto/commandcord.git"
+  },
+  "keywords": [
+    "discord.js",
+    "discord-message-command-handler"
+  ],
+  "author": "xImouto",
+  "license": "MIT",
+  "types": "./dist/index.d.ts",
+  "bugs": {
+    "url": "https://github.com/xImouto/commandcord/issues"
+  },
+  "homepage": "https://github.com/xImouto/commandcord#readme"
+}
