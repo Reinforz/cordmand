@@ -16,7 +16,7 @@
   },
   "name": "cordcommand",
   "version": "0.0.1",
-  "description": "A utility package for making discord-bot commands much easier to write",
+  "description": "A utility package for making discord-bot commands much easier to write with discord.js",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
