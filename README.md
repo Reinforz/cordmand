@@ -17,27 +17,39 @@ const client = new Client({
 });
 
 // define your commands similar to
-const commands: MessageCommand[] = [
-  {
-    regex: /ping/i,
-    message: "pong",
-  },
-  {
-    regex: /hi/i,
-    // message can also be a callback function which can access the discord message object
-    message: (_, message) => `hello <@${message.author.id}>`,
-  },
-  {
-    regex: /bye/i,
-    message: (_, message) => `bye ${message.author.username}`,
-    reply: true, // uses discord's message.reply intead of just sending the message in the same channel
-  },
-  {
-    regex: /args/i,
-    message: (args) => `The arguments are: ${args.join(", ")}`,
-    reply: true, 
-  },
-];
+const commands: Commands = {
+  interactionCreate: [
+    // define interactions here
+    {
+      name: "ping",
+      cb: async (interaction) => {
+        await interaction.reply("Pong!");
+      },
+    },
+  ],
+
+  messageCreate: [
+    {
+      regex: /ping/i,
+      message: "pong",
+    },
+    {
+      regex: /hi/i,
+      // message can also be a callback function which can access the discord message object
+      message: (_, message) => `hello <@${message.author.id}>`,
+    },
+    {
+      regex: /bye/i,
+      message: (_, message) => `bye ${message.author.username}`,
+      reply: true, // uses discord's message.reply intead of just sending the message in the same channel
+    },
+    {
+      regex: /args/i,
+      message: (args) => `The arguments are: ${args.join(", ")}`,
+      reply: true, 
+    },
+  ],
+};
 
 // add commands to the client by calling the addCommands function provided by the client
 addCommands(client, commands, {

@@ -1,4 +1,4 @@
-import { Client, Message } from "discord.js";
+import { ChatInputCommandInteraction, Client, Message } from "discord.js";
 
 export const allMatch = /.*/;
 
@@ -16,6 +16,11 @@ export type MessageArgCb = (messageArgs: string[], message: Message) => string;
  */
 export type MessageCb = (message?: Message) => void;
 
+/**
+ * Function to do anything you want to with the interaction
+ * @param interaction The discord Chat Command Interaction object. Accessing it allows using author, channel etc.
+ */
+export type InteractionCb = (interaction: ChatInputCommandInteraction) => void;
 /**
  * Function to parse arguments incase the default one is not according to expectations
  * @param messageContent the string message content to process into arguments
@@ -37,13 +42,33 @@ export interface MessageCommand {
   reply?: boolean;
 }
 
+/**
+ * Object explaining what a command does
+ * @property name - the name of the command
+ * @property cb - A function to give users complete control with what to do with the interaction object
+ */
+export interface InteractionCommand {
+  name: string;
+  cb: InteractionCb;
+}
+
+/**
+ * Main Object to pass to add defferent types of commands
+ * @property messageCreate - regular message commands
+ * @property interactionCreate - interaction (or slash) commands
+ */
+export interface Commands {
+  messageCreate?: MessageCommand[];
+  interactionCreate?: InteractionCommand[];
+}
+
 export interface AddCommandsOptions {
   messageCommandPrefix: RegExp;
   messageArgumentParser?: (messageContent: string) => string[];
 }
 
 /**
- * The default function to parse arguments 
+ * The default function to parse arguments
  * @param messageContent the string message content to process into arguments
  * @param messageCommandPrefix the regex command prefix to not pass it into the arguments array
  * @returns arguments in the form of an array of string
@@ -55,10 +80,14 @@ export function messageArgumentParser(messageContent: string, messageCommandPref
 /**
  * Main function to add commands to the discord bot client
  * @param client The discord client to "add" commands on
- * @param commands Array of objects, each representing the information of a command
+ * @param commands Object representing the information of different types of commands
  * @param options Optional. Needed for passing command prefix regex and/or message argument parser
  */
-export function addCommands(client: Client, commands: MessageCommand[], options?: AddCommandsOptions) {
+export function addCommands(
+  client: Client,
+  { messageCreate = [], interactionCreate = [] }: Commands,
+  options?: AddCommandsOptions
+) {
   client.on("messageCreate", async (message) => {
     if (!message.content.match(options?.messageCommandPrefix || allMatch)) {
       return;
@@ -66,12 +95,24 @@ export function addCommands(client: Client, commands: MessageCommand[], options?
     const args = options?.messageArgumentParser
       ? options.messageArgumentParser(message.content)
       : messageArgumentParser(message.content, options?.messageCommandPrefix || "");
-    for (let command of commands) {
-      if (!message.content.match(command.regex)) {
+    for (let command of messageCreate) {
+      if (!args[0]?.match(command.regex)) {
         continue;
       }
       command.cb && (await command.cb(message));
       command.message && (await sendMessage(command.message, message, args, command.reply));
+      break;
+    }
+  });
+
+  client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    for (let command of interactionCreate) {
+      if (interaction.commandName !== command.name) {
+        continue;
+      }
+      await command.cb(interaction);
       break;
     }
   });

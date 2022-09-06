@@ -15,12 +15,12 @@
     "typescript": "^4.8.2"
   },
   "name": "cordcommand",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A utility package for making discord-bot commands much easier to write with discord.js",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xImouto/cordcommand.git"
+    "url": "git+https://github.com/NLP-practitioners/cordcommand.git"
   },
   "keywords": [
     "discord.js",
@@ -30,7 +30,7 @@
   "license": "MIT",
   "types": "./dist/index.d.ts",
   "bugs": {
-    "url": "https://github.com/xImouto/cordcommand/issues"
+    "url": "https://github.com/NLP-practitioners/cordcommand/issues"
   },
-  "homepage": "https://github.com/xImouto/cordcordcommand#readme"
+  "homepage": "https://github.com/NLP-practitioners/cordcommand#readme"
 }
