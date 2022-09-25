@@ -73,3 +73,6 @@ addCommands(client, commands, {
 // login
 client.login(process.env.BOT_TOKEN!);
 ```
+
+## Contributors
+- [imoxto](https://github.com/imoxto)
