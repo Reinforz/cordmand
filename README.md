@@ -1,11 +1,24 @@
-# Cordcommand
+# Cordmand
 
 ## About
 A utility package for making discord-bot commands much easier to write with discord.js.
 
 ## Usage Example
 
-```js
+#### Install this package:
+```bash
+npm i @reinforz/cordmand
+```
+or,
+```bash
+yarn add @reinforz/cordmand
+```
+
+#### Example typescript file:
+```ts
+import { Client, GatewayIntentBits } from "discord.js";
+import { addCommands, Commands } from "@reinforz/cordmand";
+
 // initiate discord.js client
 const client = new Client({
   intents: [
