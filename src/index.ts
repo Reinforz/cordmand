@@ -1,71 +1,7 @@
-import { ChatInputCommandInteraction, Client, Message } from "discord.js";
+import { Client, Message } from "discord.js";
+import { Commands, AddCommandsOptions, MessageArgCb } from "types";
 
 export const allMatch = /.*/;
-
-/**
- * Function to help send message in discord
- * @param messageArgs message arguments string array returned by MessageArgumentParser. Default parser excludes the message command prefix
- * @param message The discord Message object. Accessing it allows using author, channel etc. of the message
- * @returns string message to send in discord
- */
-export type MessageArgCb = (messageArgs: string[], message: Message) => string;
-
-/**
- * Function to do anything you want to instead of just sending a message
- * @param message The discord Message object. Accessing it allows using author, channel etc. of the message
- */
-export type MessageCb = (message?: Message) => void;
-
-/**
- * Function to do anything you want to with the interaction
- * @param interaction The discord Chat Command Interaction object. Accessing it allows using author, channel etc.
- */
-export type InteractionCb = (interaction: ChatInputCommandInteraction) => void;
-/**
- * Function to parse arguments incase the default one is not according to expectations
- * @param messageContent the string message content to process into arguments
- * @returns should return arguments in the form of an array of string
- */
-export type MessageArgumentParserCb = (messageContent: string) => string[];
-
-/**
- * Object explaining what a command does
- * @property regex - the regex used to match with the message content detect the command
- * @property cb - A function to give users complete control with what to do with the message object
- * @property message - a message to send or funtion returning a message to send
- * @property reply - boolean indicating whether to send the message by replying to the command message or not
- */
-export interface MessageCommand {
-  regex: RegExp;
-  cb?: MessageCb;
-  message?: string | MessageArgCb;
-  reply?: boolean;
-}
-
-/**
- * Object explaining what a command does
- * @property name - the name of the command
- * @property cb - A function to give users complete control with what to do with the interaction object
- */
-export interface InteractionCommand {
-  name: string;
-  cb: InteractionCb;
-}
-
-/**
- * Main Object to pass to add defferent types of commands
- * @property messageCreate - regular message commands
- * @property interactionCreate - interaction (or slash) commands
- */
-export interface Commands {
-  messageCreate?: MessageCommand[];
-  interactionCreate?: InteractionCommand[];
-}
-
-export interface AddCommandsOptions {
-  messageCommandPrefix: RegExp;
-  messageArgumentParser?: (messageContent: string) => string[];
-}
 
 /**
  * The default function to parse arguments
@@ -96,11 +32,22 @@ export function addCommands(
       ? options.messageArgumentParser(message.content)
       : messageArgumentParser(message.content, options?.messageCommandPrefix || "");
     for (let command of messageCreate) {
-      if (!args[0]?.match(command.regex)) {
+      const { regex, reply, cb, message: msgFromCommand } = command;
+      if (!args[0]?.match(regex)) {
         continue;
       }
-      command.cb && (await command.cb(message));
-      command.message && (await sendMessage(command.message, message, args, command.reply));
+      if (cb) {
+        await cb(message);
+        break;
+      }
+      if (!msgFromCommand) break;
+      if (typeof msgFromCommand === "function") {
+        if (reply) await message.reply(await msgFromCommand(args, message));
+        else await message.channel.send(await msgFromCommand(args, message));
+        break;
+      }
+      if (reply) await message.reply(msgFromCommand);
+      else await message.channel.send(msgFromCommand);
       break;
     }
   });
@@ -109,16 +56,27 @@ export function addCommands(
     if (!interaction.isChatInputCommand()) return;
 
     for (let command of interactionCreate) {
-      if (interaction.commandName !== command.name) {
+      const { name, cb, message } = command;
+      if (interaction.commandName !== name) {
         continue;
       }
-      await command.cb(interaction);
-      break;
+      if (cb) {
+        await cb(interaction);
+        break;
+      }
+      if (!message) break;
+      if (typeof message === "function") {
+        await interaction.reply(await message(interaction));
+        break;
+      } else {
+        await interaction.reply(message);
+      }
     }
   });
 }
 
 /**
+ * @deprecated Since version 0.0.4. Use the addCommands function instead.
  * Helper function which is needed for addCommands to work. Not intended to be used by consumers. Used to send message to discord.
  * @param message message in string to send, or function that returns a message in string to send
  * @param discordMessage The discord Message object. Accessing it allows using author, channel etc. of the message
@@ -137,3 +95,5 @@ export function sendMessage(
       ? discordMessage.reply(message(messageArgs, discordMessage))
       : discordMessage.channel.send(message(messageArgs, discordMessage));
 }
+
+export * from "./types";
