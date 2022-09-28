@@ -5,6 +5,7 @@ import {
   InteractionReplyOptions,
   ChatInputCommandInteraction,
   Message,
+  ClientOptions,
 } from "discord.js";
 
 export type CommonReply = string | MessagePayload;
@@ -78,4 +79,12 @@ export interface Commands {
 export interface AddCommandsOptions {
   messageCommandPrefix: RegExp;
   messageArgumentParser?: (messageContent: string) => string[];
+}
+
+export interface MakeDiscordClientOptions {
+  botToken: string;
+  clientOptions: ClientOptions;
+  onceReady?: () => void;
+  commands?: Commands;
+  addCommandsOptions?: AddCommandsOptions;
 }

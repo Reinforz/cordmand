@@ -1,5 +1,5 @@
 import { Client, Message } from "discord.js";
-import { Commands, AddCommandsOptions, MessageArgCb } from "types";
+import { Commands, AddCommandsOptions, MessageArgCb, MakeDiscordClientOptions } from "types";
 
 export const allMatch = /.*/;
 
@@ -10,7 +10,7 @@ export const allMatch = /.*/;
  * @returns arguments in the form of an array of string
  */
 export function messageArgumentParser(messageContent: string, messageCommandPrefix: RegExp | string) {
-  return messageContent.toLocaleLowerCase().trim().replace(/\s\s+/g, " ").replace(messageCommandPrefix, "").split(" ");
+  return messageContent.toLowerCase().replace(messageCommandPrefix, "").trim().replace(/\s\s+/g, " ").split(" ");
 }
 
 /**
@@ -36,6 +36,7 @@ export function addCommands(
       if (!args[0]?.match(regex)) {
         continue;
       }
+
       if (cb) {
         await cb(message);
         break;
@@ -77,11 +78,6 @@ export function addCommands(
 
 /**
  * @deprecated Since version 0.0.4. Use the addCommands function instead.
- * Helper function which is needed for addCommands to work. Not intended to be used by consumers. Used to send message to discord.
- * @param message message in string to send, or function that returns a message in string to send
- * @param discordMessage The discord Message object. Accessing it allows using author, channel etc. of the message
- * @param messageArgs The arguments of the message. May be needed by the message function
- * @param reply boolean to indicate whether or not to reply to the message while sending it
  */
 export function sendMessage(
   message: string | MessageArgCb,
@@ -94,6 +90,31 @@ export function sendMessage(
     reply
       ? discordMessage.reply(message(messageArgs, discordMessage))
       : discordMessage.channel.send(message(messageArgs, discordMessage));
+}
+
+/**
+ * function to make the discord client
+ * @param makeDiscordClientOptions an object which has the necessary fields to make a discord.js client.
+ * i.e. botToken, ClientOptions (which includes intents), onceReady function, commands, addCommandsOptions
+ */
+export function makeDiscordClient({
+  botToken,
+  clientOptions,
+  onceReady = () => console.log("BOT is online"),
+  commands = undefined,
+  addCommandsOptions = undefined,
+}: MakeDiscordClientOptions) {
+  const client = new Client(clientOptions);
+
+  client.once("ready", onceReady);
+
+  if (commands) {
+    addCommands(client, commands, addCommandsOptions);
+  }
+
+  client.login(botToken);
+
+  return client;
 }
 
 export * from "./types";
