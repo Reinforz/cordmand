@@ -57,7 +57,7 @@ export interface MessageCommand {
  * Object explaining what a command does
  * @property name - the name of the command
  * @property cb - A function to give users complete control with what to do with the interaction object
- * @property reply - A string or a function returning a string to reply to the interaction
+ * @property message - A string or a function returning a string to reply to the interaction
  */
 export interface InteractionCommand {
   name: string;

@@ -11,6 +11,6 @@ export function getMocks(messageContent: string) {
       send: jest.fn(),
     },
     reply: jest.fn(),
-    content: "",
+    content: messageContent,
   };
 }
