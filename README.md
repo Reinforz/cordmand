@@ -17,7 +17,8 @@ yarn add @reinforz/cordmand
 #### Example typescript file:
 ```ts
 import { Client, GatewayIntentBits } from "discord.js";
-import { addCommands, Commands } from "@reinforz/cordmand";
+import { addCommands } from "@reinforz/cordmand";
+import { Commands } from "@reinforz/cordmand/types";
 
 // initiate discord.js client
 const client = new Client({
@@ -37,6 +38,13 @@ const commands: Commands = {
       name: "ping",
       cb: async (interaction) => {
         await interaction.reply("Pong!");
+      },
+    },
+    {
+      name: "hello",
+      message: {
+        content: "hello",
+        ephemeral: true,
       },
     },
   ],
@@ -72,6 +80,26 @@ addCommands(client, commands, {
 
 // login
 client.login(process.env.BOT_TOKEN!);
+```
+
+#### Example with just using `makeDiscordClient` function:
+```ts
+import { makeDiscordClient } from "@reinforz/cordmand";
+import { Commands, MakeDiscordClientOptions } from "@reinforz/cordmand/types";
+import { commands } from "./some-file"
+
+const makeClientOptions: MakeDiscordClientOptions = {
+  botToken: process.env.BOT_TOKEN!,
+  clientOptions: {
+    intents: ["Guilds", "GuildMessages", "MessageContent", "GuildMembers"],
+  },
+  commands, // the same command object as previous one, It will work in the same way as the previous example
+  addCommandsOptions: {
+    messageCommandPrefix: /^i!/i,
+  },
+};
+
+makeDiscordClient(makeClientOptions);
 ```
 
 ## Contributors
